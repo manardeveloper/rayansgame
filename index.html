@@ -6,39 +6,110 @@
   <title>My Sweet Candy Game 🌸</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     :root {
       --bg-gradient: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%);
-      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-bg: rgba(255, 255, 255, 0.95);
       --main-pink: #ff80ab;
       --deep-purple: #7b1fa2;
       --text-color: #7b1fa2;
     }
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
     body { 
-      background: var(--bg-gradient); font-family: 'Segoe UI', 'Courier New', sans-serif;
-      display: flex; justify-content: center; align-items: center; 
-      height: 100vh; margin: 0; overflow: hidden;
+      background: var(--bg-gradient); 
+      font-family: 'Segoe UI', 'Courier New', sans-serif;
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh; 
+      margin: 0; 
+      padding: 10px;
+      overflow: auto;
       transition: background 1s ease-in-out, opacity 2s ease-in-out;
     }
+    #app {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
     .card { 
-      background: var(--card-bg); padding: 35px 25px; border-radius: 25px; 
-      border: 1px solid rgba(255,255,255,0.3); text-align: center; 
-      width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      background: var(--card-bg); 
+      padding: 35px 25px; 
+      border-radius: 25px; 
+      border: 1px solid rgba(255,255,255,0.3); 
+      text-align: center; 
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       backdrop-filter: blur(15px);
       transition: all 0.5s ease;
-      max-height: 85vh; overflow-y: auto;
+      max-height: 90vh; 
+      overflow-y: auto;
     }
-    h2 { color: var(--text-color); font-size: 1.1rem; margin-bottom: 20px; font-weight: 600; line-height: 1.5; white-space: pre-line; }
+    h2 { 
+      color: var(--text-color); 
+      font-size: 1.1rem; 
+      margin-bottom: 20px; 
+      font-weight: 600; 
+      line-height: 1.5; 
+      white-space: pre-line; 
+    }
     button { 
-      background: var(--main-pink); border: none; padding: 14px; border-radius: 12px; 
-      color: white; font-weight: bold; width: 100%; margin-bottom: 10px; cursor: pointer; 
-      transition: 0.3s; font-size: 0.95rem;
+      background: var(--main-pink); 
+      border: none; 
+      padding: 14px; 
+      border-radius: 12px; 
+      color: white; 
+      font-weight: bold; 
+      width: 100%; 
+      margin-bottom: 10px; 
+      cursor: pointer; 
+      transition: 0.3s; 
+      font-size: 0.95rem;
     }
-    button:hover { opacity: 0.9; transform: scale(1.02); }
-    img { width: 100%; max-width: 200px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    button:hover { 
+      opacity: 0.9; 
+      transform: scale(1.02); 
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    img { 
+      width: 100%; 
+      max-width: 200px; 
+      height: auto;
+      border-radius: 15px; 
+      margin-bottom: 15px; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      object-fit: cover;
+    }
+    @media (max-width: 480px) {
+      .card {
+        padding: 25px 15px;
+      }
+      h2 {
+        font-size: 0.95rem;
+      }
+      button {
+        padding: 12px;
+        font-size: 0.9rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <audio id="bgMusic" loop><source src="https://files.catbox.moe/8y8p54.mp3" type="audio/mpeg"></audio>
+  <audio id="bgMusic" loop>
+    <source src="https://files.catbox.moe/8y8p54.mp3" type="audio/mpeg">
+  </audio>
   <div id="app"></div>
 
   <script>
@@ -46,104 +117,110 @@
     const webhook = 'https://app.forminit.com/f/e7er6de3jxh';
 
     function sendUpdate(step, choice) {
-      fetch(webhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "Step": step, "Choice": choice })
-      });
+      try {
+        fetch(webhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ "Step": step, "Choice": choice })
+        }).catch(e => console.log('Webhook sent'));
+      } catch(e) {
+        console.log('Webhook error');
+      }
     }
 
-    function render(content) { document.getElementById('app').innerHTML = `<div class="card">${content}</div>`; }
+    function render(content) { 
+      document.getElementById('app').innerHTML = `<div class="card">${content}</div>`; 
+    }
 
     // الفقرة 1
     window.start = () => { 
-      render(`<h2>Happy Birthday my precious husband 🎂🎉💗✨</h2><img src="cake.jpg"><button onclick="play()">Say: Thank you my little girl</button>`); 
+      render(`<h2>Happy Birthday my precious husband 🎂🎉💗✨</h2><img src="cake.jpg" onerror="this.src='https://via.placeholder.com/200?text=Cake'"><button onclick="play()">Say: Thank you my little girl</button>`); 
     };
 
     // الفقرة 2
     window.play = () => { 
-      music.play(); 
+      music.play().catch(e => console.log('Audio autoplay prevented'));
       sendUpdate("Step 1", "Cake Clicked");
-      render(`<h2>Ur birthday is the most beautiful and special day ever cuz the love of my whole life was born today 🥹💗🎀</h2><img src="kiss.jpg"><button onclick="step3()">What's next?</button>`); 
+      render(`<h2>Ur birthday is the most beautiful and special day ever cuz the love of my whole life was born today 🥹💗🎀</h2><img src="kiss.jpg" onerror="this.src='https://via.placeholder.com/200?text=Kiss'"><button onclick="step3()">What's next?</button>`); 
     };
 
     // الفقرة 3
     window.step3 = () => {
       sendUpdate("Step 2", "Kiss Clicked");
-      render(`<h2>I want to tell u that u are not just getting a year older, u are a year closer to being in my arms and building our future together forever 👫🏻🎀 u are my everything, my soul, my safe place, and the best blessing that's ever happened to me in this world 🥹💗🎀</h2><img src="weirdo.jpg"><button onclick="step4()">Muah and next</button>`);
+      render(`<h2>I want to tell u that u are not just getting a year older, u are a year closer to being in my arms and building our future together forever 👫🏻🎀 u are my everything, my soul, my safe place, and the best blessing that's ever happened to me in this world 🥹💗🎀</h2><img src="weirdo.jpg" onerror="this.src='https://via.placeholder.com/200?text=Weirdo'"><button onclick="step4()">Muah and next</button>`);
     };
 
     // الفقرة 4
     window.step4 = () => {
       sendUpdate("Step 3", "Weirdo Clicked");
-      render(`<h2>I feel soooooooooooooooo lucky and proud to celebrate ur day, even if I'm just thinking about u every single second without stopping 🙎🏻⏱️🙎🏻‍♀️ Thank u for being soooo caring, the sweetest, prettiest, and most loving husband ever ever ever</h2><img src="weirdo2.jpg"><button onclick="step5()">Show me our memories</button>`);
+      render(`<h2>I feel soooooooooooooooo lucky and proud to celebrate ur day, even if I'm just thinking about u every single second without stopping 🙎🏻⏱️🙎🏻‍♀️ Thank u for being soooo caring, the sweetest, prettiest, and most loving husband ever ever ever</h2><img src="weirdo2.jpg" onerror="this.src='https://via.placeholder.com/200?text=Weirdo2'"><button onclick="step5()">Show me our memories</button>`);
     };
 
     // الفقرة 5
     window.step5 = () => {
       sendUpdate("Step 4", "Weirdo2 Clicked");
-      render(`<h2>I won't deny that we had a wonderful time and felt so happy playing chess together</h2><img src="chess.jpg"><button onclick="step6()">And what else?</button>`);
+      render(`<h2>I won't deny that we had a wonderful time and felt so happy playing chess together</h2><img src="chess.jpg" onerror="this.src='https://via.placeholder.com/200?text=Chess'"><button onclick="step6()">And what else?</button>`);
     };
 
     // الفقرة 6
     window.step6 = () => {
       sendUpdate("Step 5", "Chess Clicked");
-      render(`<h2>and Free Fire too</h2><img src="ff.jpg"><button onclick="step7()">Don't forget the rest</button>`);
+      render(`<h2>and Free Fire too</h2><img src="ff.jpg" onerror="this.src='https://via.placeholder.com/200?text=FreeFire'"><button onclick="step7()">Don't forget the rest</button>`);
     };
 
     // الفقرة 7
     window.step7 = () => {
       sendUpdate("Step 6", "Free Fire Clicked");
-      render(`<h2>And let's not forget parchisi</h2><img src="parchisi.jpg"><button onclick="step8()">The list goes on</button>`);
+      render(`<h2>And let's not forget parchisi</h2><img src="parchisi.jpg" onerror="this.src='https://via.placeholder.com/200?text=Parchisi'"><button onclick="step8()">The list goes on</button>`);
     };
 
     // الفقرة 8
     window.step8 = () => {
       sendUpdate("Step 7", "Parchisi Clicked");
-      render(`<h2>the list is still so long</h2><img src="little baby blushing.jpg"><button onclick="step9()">Show me the sweetest one</button>`);
+      render(`<h2>the list is still so long</h2><img src="little baby blushing.jpg" onerror="this.src='https://via.placeholder.com/200?text=Baby+Blushing'"><button onclick="step9()">Show me the sweetest one</button>`);
     };
 
     // الفقرة 9
     window.step9 = () => {
       sendUpdate("Step 8", "List Clicked");
-      render(`<h2>And the sweet memory of us cooking together will always stay warm in my heart</h2><img src="indomie.jpg"><button onclick="step10()">Back to gaming</button>`);
+      render(`<h2>And the sweet memory of us cooking together will always stay warm in my heart</h2><img src="indomie.jpg" onerror="this.src='https://via.placeholder.com/200?text=Indomie'"><button onclick="step10()">Back to gaming</button>`);
     };
 
     // الفقرة 10
     window.step10 = () => {
       sendUpdate("Step 9", "Cooking Clicked");
-      render(`<h2>We also played Roblox</h2><img src="roblox.jpg"><button onclick="step11()">Next game</button>`);
+      render(`<h2>We also played Roblox</h2><img src="roblox.jpg" onerror="this.src='https://via.placeholder.com/200?text=Roblox'"><button onclick="step11()">Next game</button>`);
     };
 
     // الفقرة 11
     window.step11 = () => {
       sendUpdate("Step 10", "Roblox Clicked");
-      render(`<h2>And sky too</h2><img src="sky1.jpg" style="margin-bottom:5px;"><img src="sky2.jpg" style="margin-bottom:5px;"><img src="sky3.jpg"><button onclick="step12()">Now for the best one</button>`);
+      render(`<h2>And sky too</h2><img src="sky1.jpg" onerror="this.src='https://via.placeholder.com/200?text=Sky1'" style="margin-bottom:5px;"><img src="sky2.jpg" onerror="this.src='https://via.placeholder.com/200?text=Sky2'" style="margin-bottom:5px;"><img src="sky3.jpg" onerror="this.src='https://via.placeholder.com/200?text=Sky3'"><button onclick="step12()">Now for the best one</button>`);
     };
 
     // الفقرة 12
     window.step12 = () => {
       sendUpdate("Step 11", "Sky Clicked");
-      render(`<h2>but the most important game of all is Mobile Legends</h2><img src="mlbb1.jpg" style="margin-bottom:5px;"><img src="mlbb2.jpg"><button onclick="step13()">Next</button>`);
+      render(`<h2>but the most important game of all is Mobile Legends</h2><img src="mlbb1.jpg" onerror="this.src='https://via.placeholder.com/200?text=MLBB1'" style="margin-bottom:5px;"><img src="mlbb2.jpg" onerror="this.src='https://via.placeholder.com/200?text=MLBB2'"><button onclick="step13()">Next</button>`);
     };
 
     // الفقرة 13
     window.step13 = () => {
       sendUpdate("Step 12", "MLBB Clicked");
-      render(`<h2>I can't wait for us to get married so we can play them all again, sitting right next to each other.\n🥹💗 I just love laughing w u 😺🌷, talking to u, and u are always my number one priority that I make all my time for 🤭🎀🎀</h2><img src="chainsawman.jpg"><button onclick="step14()">You are my number one too</button>`);
+      render(`<h2>I can't wait for us to get married so we can play them all again, sitting right next to each other.\n🥹💗 I just love laughing w u 😺🌷, talking to u, and u are always my number one priority that I make all my time for 🤭🎀🎀</h2><img src="chainsawman.jpg" onerror="this.src='https://via.placeholder.com/200?text=Chainsaw'"><button onclick="step14()">You are my number one too</button>`);
     };
 
     // الفقرة 14
     window.step14 = () => {
       sendUpdate("Step 13", "Priority Clicked");
-      render(`<h2>I hope this year brings u all the happiness u deserve, and I promise I'll always stay by ur side no matter what 👫🏻🎀 Have the most wonderful birthday, my sweetcandyyyy cuz u are the real candy hehehe 🍬💞</h2><img src="dlmatching.png"><button onclick="step15()">Sweet candy wants more</button>`);
+      render(`<h2>I hope this year brings u all the happiness u deserve, and I promise I'll always stay by ur side no matter what 👫🏻🎀 Have the most wonderful birthday, my sweetcandyyyy cuz u are the real candy hehehe 🍬💞</h2><img src="dlmatching.png" onerror="this.src='https://via.placeholder.com/200?text=Matching'"><button onclick="step15()">Sweet candy wants more</button>`);
     };
 
     // الفقرة 15
     window.step15 = () => {
       sendUpdate("Step 14", "Candy Clicked");
       confetti({ particleCount: 150, spread: 70 });
-      render(`<h2>And remember Papi, I just want to stay with u forever and forever until we finally get married 👰🏻‍♀️💗🤵🏻 , life is soooo much better with u.. I can't wait for the day we celebrate ur birthday together in our house with our little cute babies and angels running around us 👨‍👩‍児童 🏠💞</h2><img src="kitchen.jpg"><button onclick="finalStep()">To our forever</button>`);
+      render(`<h2>And remember Papi, I just want to stay with u forever and forever until we finally get married 👰🏻‍♀️💗🤵🏻 , life is soooo much better with u.. I can't wait for the day we celebrate ur birthday together in our house with our little cute babies and angels running around us 👨‍👩‍児童 🏠💞</h2><img src="kitchen.jpg" onerror="this.src='https://via.placeholder.com/200?text=Kitchen'"><button onclick="finalStep()">To our forever</button>`);
     };
 
     // الفقرة الأخيرة والخاتمة
@@ -157,11 +234,12 @@
       document.body.style.opacity = '0';
       setTimeout(() => {
         document.body.style.background = "#000";
-        document.body.innerHTML = "<h1 style='color:white; font-family:sans-serif; text-align:center;'>❤️</h1>";
+        document.body.innerHTML = "<h1 style='color:white; font-family:sans-serif; text-align:center; height:100vh; display:flex; justify-content:center; align-items:center;'>❤️</h1>";
         document.body.style.opacity = '1';
       }, 2000);
     };
 
+    // Start the game
     start();
   </script>
 </body>
